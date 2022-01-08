@@ -189,15 +189,21 @@ class NewMessageController extends Controller
             $this->vk->messages()->send($this->access_token, $response);
         }
 
-        $user->state = 'init';
-        $user->save();
+        $message = match ( $user->state ) {
+            'in_dialog' => 'Вы завершили диалог!',
+            'in_search' => 'Поиск остановлен',
+            default => "Новый диалог - !н\nОстановить -диалог !с",
+        };
 
         $response = [
             'peer_id' => $peer_id,
-            'message' => 'Вы завершили диалог!',
+            'message' => $message,
             'keyboard' => $this->buttons,
             'random_id' => rand(),
         ];
+
+        $user->state = 'init';
+        $user->save();
 
         $this->vk->messages()->send($this->access_token, $response);
 

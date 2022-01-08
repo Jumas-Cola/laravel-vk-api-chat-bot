@@ -121,6 +121,7 @@ class NewMessageController extends Controller
         }
 
         $other = User::where('state', 'in_search')
+            ->where('id', '!=', $user->id)
             ->orderBy('updated_at', 'asc')->first();
 
         if ( !empty($other) ) {
